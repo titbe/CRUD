@@ -19,11 +19,6 @@ app.use(express.json());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// app.use(cookieSession({
-//   maxAge: 30 * 24 * 60 * 60 * 1000,
-//   keys: 'hieu'
-// })
-// );
 
 app.use(
   express.static(
@@ -51,14 +46,14 @@ app.get("/", (req, res) => {
   res.sendFile("index.html");
 });
 
-connectMongoDB();
+// connectMongoDB();
 
-// app.listen(PORT, async () => {
-//   console.log(`Listen on Port: ${process.env.PORT}`);
-//   try {
-//     await mongoose.connect(process.env.MONGO_URI);
-//     console.log("Connected database");
-//   } catch (error) {
-//     console.log(error);
-//   }
-// });
+app.listen(PORT, async () => {
+  console.log(`Listen on Port: ${process.env.PORT}`);
+  try {
+    await mongoose.connect(process.env.MONGO_URI);
+    console.log("Connected database");
+  } catch (error) {
+    console.log(error);
+  }
+});
