@@ -48,7 +48,7 @@ app.get("/", (req, res) => {
 
 // connectMongoDB();
 
-app.listen(PORT, async () => {
+app.listen(process.env.PORT, async () => {
   console.log(`Listen on Port: ${process.env.PORT}`);
   try {
     await mongoose.connect(process.env.MONGO_URI);
