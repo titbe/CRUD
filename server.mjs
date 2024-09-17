@@ -8,8 +8,9 @@ import passport from "passport";
 import session from "express-session";
 import routerUser from "./routeUser.mjs";
 import dotenv from "dotenv";
-import { fileURLToPath } from 'url';
-import path from 'path';
+import { fileURLToPath } from "url";
+import path from "path";
+import connectMongoDB from "./connectMongo.mjs";
 
 const app = express();
 dotenv.config();
@@ -24,7 +25,11 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // })
 // );
 
-app.use(express.static(path.join(path.dirname(fileURLToPath(import.meta.url)), 'client')));
+app.use(
+  express.static(
+    path.join(path.dirname(fileURLToPath(import.meta.url)), "client")
+  )
+);
 
 app.use(
   session({
@@ -42,18 +47,18 @@ app.use(router);
 app.use(routerLogin);
 app.use(routerUser);
 
-app.get('/', (req,res)=>{
-  res.sendFile('index.html')
-})
-
-const PORT = 3000;
-
-app.listen(PORT, async () => {
-  console.log(`Listen on Port: ${PORT}`);
-  try {
-    await mongoose.connect(process.env.MONGO_URI);
-    console.log("Connected database");
-  } catch (error) {
-    console.log(error);
-  }
+app.get("/", (req, res) => {
+  res.sendFile("index.html");
 });
+
+connectMongoDB();
+
+// app.listen(PORT, async () => {
+//   console.log(`Listen on Port: ${process.env.PORT}`);
+//   try {
+//     await mongoose.connect(process.env.MONGO_URI);
+//     console.log("Connected database");
+//   } catch (error) {
+//     console.log(error);
+//   }
+// });
