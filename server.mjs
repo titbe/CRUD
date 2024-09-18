@@ -19,7 +19,6 @@ app.use(express.json());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-
 app.use(
   express.static(
     path.join(path.dirname(fileURLToPath(import.meta.url)), "client")
@@ -31,7 +30,7 @@ app.use(
     secret: process.env.SESSION_SECRET || "defaultSecret",
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: false },
+    cookie: { secure: false, maxAge: 24 * 60 * 60 * 1000 },
   })
 );
 

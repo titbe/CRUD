@@ -18,6 +18,10 @@ const UserSchema = new mongoose.Schema({
     type: String,
     // required: true,
   },
+  otp: {
+    code: { type: String },
+    createdAt: { type: Date },
+  },
 });
 
 const User = mongoose.model("User", UserSchema);
