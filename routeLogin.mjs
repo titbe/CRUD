@@ -136,7 +136,12 @@ routerLogin.get(
       const token = jwt.sign({ id: req.user.id }, process.env.JWT_SECRET, {
         expiresIn: "24h",
       });
-      res.cookie("x-auth-cookie", token);
+      // res.cookie("x-auth-cookie", token);
+      res.cookie("x-auth-cookie", token, {
+        httpOnly: true,
+        secure: true,  // Chỉ gửi cookie qua HTTPS
+        sameSite: "strict",
+      });
       return res.status(200).json({
         message: "Login successfully!",
         token,
