@@ -39,22 +39,25 @@ const routerLogin = express.Router();
 // }
 
 const authenticateToken = async (req, res, next) => {
-  const authHeader = req.headers.authorization;
-  const token = authHeader && authHeader.split(" ")[1];
-  if (token == null)
-    return res.sendStatus(401).json({ message: "No token provided" });
+  // const authHeader = req.headers.authorization;
+  // const token = authHeader && authHeader.split(" ")[1];
+  const token = req.cookies["x-auth-cookie"];
+  if (!token) {
+    return res.status(401).json({ message: "No token provided" });
+  }
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    console.log("decode token", decoded.id);
+
     req.user = await User.findById(decoded.id);
     if (!req.user) {
       return res.status(404).json({ message: "User not found" });
     }
-
     next();
   } catch (err) {
     console.error(err);
-    res.sendStatus(403).json({ message: "Invalid or expired token" });
+    res.status(403).json({ message: "Invalid or expired token" });
   }
 };
 
@@ -111,7 +114,7 @@ routerLogin.get(
 routerLogin.get(
   "/google/callback",
   passport.authenticate("google", {
-    successRedirect: "/login/success",
+    // successRedirect: "/login/success",
     failureRedirect: "/login/failure",
     session: false,
   }),
@@ -121,30 +124,38 @@ routerLogin.get(
         expiresIn: "24h",
       });
       res.cookie("x-auth-cookie", token);
-
-      res.json({ token });
+      return res.status(200).json({
+        message: "Login successfully!",
+        token,
+        user: req.user,
+      });
+    } else {
+      return res.status(401).json({
+        message: "Unauthorized",
+      });
     }
   }
 );
 
-routerLogin.get("/login/success", authenticateToken, (req, res) => {
-  console.log("res", req.user);
-  try {
-    if (req.user) {
-      res.status(200).json({
-        message: "Login successfully!",
-        user: req.user,
-      });
-    } else {
-      res.status(401).json({ message: "Unauthorized" });
-    }
-  } catch (error) {
-    console.error("Error handling login success:", error);
-    res.status(500).json({
-      message: `Internal Server Error: ${error}`,
-    });
-  }
-});
+// routerLogin.get("/login/success", authenticateToken, (req, res) => {
+//   console.log("res", req.user);
+//   try {
+//     if (req.user) {
+//       res.status(200).json({
+//         message: "Login successfully!",
+//         token: req.user.token,
+//         user: req.user,
+//       });
+//     } else {
+//       res.status(401).json({ message: "Unauthorized" });
+//     }
+//   } catch (error) {
+//     console.error("Error handling login success:", error);
+//     res.status(500).json({
+//       message: `Internal Server Error: ${error}`,
+//     });
+//   }
+// });
 
 routerLogin.get("/login/failure", (req, res) => {
   res.status(401).json({

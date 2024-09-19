@@ -20,12 +20,6 @@ app.use(express.json());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use(
-  express.static(
-    path.join(path.dirname(fileURLToPath(import.meta.url)), "client")
-  )
-);
-
 app.use(cookieParser(process.env.COOKIE_SECRET));
 
 app.use(passport.initialize());
@@ -35,8 +29,24 @@ app.use(routerLogin);
 app.use(routerUser);
 
 app.get("/", (req, res) => {
-  res.sendFile("index.html");
+  res.send("hello world");
 });
+
+app.get("/auth", (req, res) => {
+  res.sendFile(
+    path.join(
+      path.dirname(fileURLToPath(import.meta.url)),
+      "client",
+      "index.html"
+    )
+  );
+});
+
+app.use(
+  express.static(
+    path.join(path.dirname(fileURLToPath(import.meta.url)), "client")
+  )
+);
 
 // connectMongoDB();
 
