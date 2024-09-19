@@ -29,7 +29,6 @@ async function sendOtpEmail(user, otpCode) {
   };
 
   await transporter.sendMail(mailOptions);
-
 }
 
 routerLogin.post("/verify-otp", async (req, res) => {
@@ -38,7 +37,7 @@ routerLogin.post("/verify-otp", async (req, res) => {
     if (!req.session.otp || Date.now() > req.session.otp.expiration) {
       return res.status(400).json({ message: "OTP not found or expired" });
     }
-  
+
     if (otp !== req.session.otp.code) {
       return res.status(400).json({ message: "Invalid OTP" });
     }
@@ -54,7 +53,7 @@ routerLogin.post("/verify-otp", async (req, res) => {
       expiresIn: "24h",
     });
     res.cookie("x-auth-cookie", token);
-    
+
     res.status(200).json({ message: "OTP verified", token, user });
   } catch (error) {
     console.error("Error during login:", error);
@@ -94,7 +93,7 @@ routerLogin.post("/login", async (req, res) => {
     }
 
     const otpCode = crypto.randomBytes(3).toString("hex");
-    const otpExpiration = Date.now() + 10 * 60 * 1000; 
+    const otpExpiration = Date.now() + 10 * 60 * 1000;
 
     req.session.otp = {
       code: otpCode,
@@ -130,7 +129,6 @@ routerLogin.get(
     failureRedirect: "/login/failure",
     session: false,
   }),
-  authenticateToken,
   (req, res) => {
     if (req.user) {
       const token = jwt.sign({ id: req.user.id }, process.env.JWT_SECRET, {
@@ -139,8 +137,8 @@ routerLogin.get(
       // res.cookie("x-auth-cookie", token);
       res.cookie("x-auth-cookie", token, {
         httpOnly: true,
-        secure: true,  // Chỉ gửi cookie qua HTTPS
-        sameSite: "strict",
+        secure: true, // Chỉ gửi cookie qua HTTPS
+        sameSite: "strict", // tránh CSRF
       });
       return res.status(200).json({
         message: "Login successfully!",
