@@ -1,9 +1,12 @@
 import express from "express";
 import User from "./model/User.mjs";
 import { hashPassword } from "./help.mjs";
-import { validationResult, checkSchema } from "express-validator"; // Import checkSchema
+import { validationResult, checkSchema } from "express-validator";
 import { UserValidationSchema } from "./UserValidationSchema.mjs";
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
 
+dotenv.config();
 const routerUser = express.Router();
 
 routerUser.post(
@@ -24,6 +27,7 @@ routerUser.post(
 
     try {
       const savedUser = await newUser.save();
+
       res.status(201).json({ message: "Created new User", savedUser });
     } catch (error) {
       res.status(500).json({ error });

@@ -7,10 +7,11 @@ import cookieSession from "cookie-session";
 import passport from "passport";
 import session from "express-session";
 import routerUser from "./routeUser.mjs";
-import dotenv from "dotenv";
+import * as dotenv from "dotenv";
 import { fileURLToPath } from "url";
 import path from "path";
 import connectMongoDB from "./connectMongo.mjs";
+import cookieParser from "cookie-parser";
 
 const app = express();
 dotenv.config();
@@ -25,17 +26,9 @@ app.use(
   )
 );
 
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET || "defaultSecret",
-    resave: false,
-    saveUninitialized: true,
-    cookie: { secure: false, maxAge: 24 * 60 * 60 * 1000 },
-  })
-);
+app.use(cookieParser(process.env.COOKIE_SECRET));
 
 app.use(passport.initialize());
-app.use(passport.session());
 
 app.use(router);
 app.use(routerLogin);
